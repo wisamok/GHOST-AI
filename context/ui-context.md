@@ -19,7 +19,7 @@ hex values.]
 | Surface          | `--bg-surface`           | `#111114`                   |
 | Elevated surface | `--bg-elevated`          | `#18181c`                   |
 | Subtle surface   | `--bg-subtle`            | `#1e1e23`                   |
-| Default border   | `--border-default`       | `#2a2a30`                   |ت
+| Default border   | `--border-default`       | `#2a2a30`                   |
 | Subtle border    | `--border-subtle`        | `#3a3a42`                   |
 | Primary text     | `--text-primary`         | `#f0f0f4`                   |
 | Secondary text   | `--text-secondary`       | `#c0c0cc`                   |
