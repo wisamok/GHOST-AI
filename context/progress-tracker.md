@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Feature 02 (TBD)
+- Feature 02: Editor Chrome (Navbar + Sidebar shell)
 
 ## Completed
 
@@ -21,13 +21,18 @@ change.
   - globals.css updated: project color tokens + dark-only shadcn token overrides
   - html element has `dark` class enforced in layout.tsx
 
+- Feature 02: Editor Chrome
+  - `components/editor/editor-navbar.tsx` — fixed top navbar, sidebar toggle with PanelLeftOpen/PanelLeftClose, left/center/right sections
+  - `components/editor/project-sidebar.tsx` — floating overlay sidebar, slides in from left, Projects header + close button, My Projects / Shared tabs with empty states, full-width New Project button
+  - Dialog pattern: existing shadcn Dialog component + globals.css tokens (no new dialogs built)
+
 ## In Progress
 
 - None yet.
 
 ## Next Up
 
-- Feature 02 (TBD)
+- Feature 03 (TBD)
 
 ## Open Questions
 
