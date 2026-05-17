@@ -28,8 +28,6 @@ export default function RootLayout({
     <ClerkProvider
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      afterSignInUrl="/editor"
-      afterSignUpUrl="/editor"
       afterSignOutUrl="/sign-in"
       appearance={{
         theme: dark,

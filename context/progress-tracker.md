@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Feature 03: Auth (Clerk integration)
+- Feature 06 (TBD)
 
 ## Completed
 
@@ -26,6 +26,13 @@ change.
   - `components/editor/project-sidebar.tsx` — floating overlay sidebar, slides in from left, Projects header + close button, My Projects / Shared tabs with empty states, full-width New Project button
   - Dialog pattern: existing shadcn Dialog component + globals.css tokens (no new dialogs built)
 
+- Feature 04: Project Dialogs & Editor Home
+  - `lib/mock-projects.ts` — MockProject type + MOCK_PROJECTS array (3 owned, 2 shared)
+  - `hooks/use-project-dialogs.ts` — useProjectDialogs hook managing dialog/form/loading state
+  - `components/editor/project-dialogs.tsx` — CreateProjectDialog (live slug preview), RenameProjectDialog (prefilled, Enter submits), DeleteProjectDialog (destructive confirm)
+  - `components/editor/project-sidebar.tsx` — project items with hover rename/delete actions (owned only), mobile backdrop scrim
+  - `app/editor/page.tsx` — editor home (heading, description, New Project button), all dialogs wired
+
 - Feature 03: Auth
   - `@clerk/ui` installed (v1.11.0) for dark theme support
   - `proxy.ts` at project root — replaces deprecated `middleware.ts` (Next.js 16+), uses `clerkMiddleware` + `createRouteMatcher` to protect all routes except sign-in/sign-up
@@ -37,13 +44,20 @@ change.
   - `components/editor/editor-navbar.tsx` — `UserButton` added to right section
   - `.env.local` — placeholder env vars for `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_SIGN_IN_URL`, `NEXT_PUBLIC_CLERK_SIGN_UP_URL`
 
+- Feature 05: Prisma Schema & Data Layer
+  - Installed `@prisma/client`, `@prisma/adapter-pg`, `pg`, `@prisma/extension-accelerate`
+  - `prisma/models/project.prisma` — `Project` model (ownerId, name, description?, status enum DRAFT/ARCHIVED, canvasJsonPath?, timestamps, indexes on ownerId and createdAt) and `ProjectCollaborator` model (projectId with cascade delete, email, createdAt, unique on projectId/email, indexes on email and projectId/createdAt)
+  - `lib/prisma.ts` — cached singleton; branches on DATABASE_URL prefix: `prisma+postgres://` → Accelerate extension, otherwise → `PrismaPg` adapter
+  - Migration `20260517000422_init` applied; client generated to `lib/generated/prisma`
+  - Fixed pre-existing type error in `app/layout.tsx`: removed `afterSignInUrl`/`afterSignUpUrl` props (now env-var-only in Clerk v7+)
+
 ## In Progress
 
 - None.
 
 ## Next Up
 
-- Feature 04 (TBD)
+- Feature 06 (TBD)
 
 ## Open Questions
 
@@ -56,6 +70,7 @@ change.
 - cn() helper in lib/utils.ts uses clsx + tailwind-merge
 - Dark-only app: `dark` class hardcoded on `<html>`, both `:root` and `.dark` blocks set to project dark palette so no light flash regardless of class state
 - Auth via Clerk: proxy.ts (Next.js 16 convention), ClerkProvider in root layout, public routes defined via NEXT_PUBLIC_CLERK_SIGN_IN/UP_URL env vars
+- Prisma v7: multi-file schema (prisma/ dir), prisma.config.ts for datasource URL, driver adapter required; client generated to lib/generated/prisma
 
 ## Session Notes
 

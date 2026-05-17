@@ -24,9 +24,8 @@ export default function SignInPage() {
     <div className="flex min-h-screen">
       {/* Left panel — hidden on small screens */}
       <div
-        className="flex flex-col relative shrink-0"
+        className="hidden lg:flex flex-col relative shrink-0 lg:w-1/2"
         style={{
-          width: "50%",
           backgroundColor: "var(--bg-surface)",
           borderRight: "1px solid var(--border-default)",
         }}
