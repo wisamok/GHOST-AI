@@ -11,23 +11,14 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { type MockProject } from "@/lib/mock-projects"
-
-function toSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-}
+import { type ProjectSummary } from "@/lib/data/projects"
 
 interface CreateProjectDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   name: string
   onNameChange: (v: string) => void
+  roomId: string | undefined
   loading: boolean
   onSubmit: () => void
 }
@@ -37,11 +28,10 @@ export function CreateProjectDialog({
   onOpenChange,
   name,
   onNameChange,
+  roomId,
   loading,
   onSubmit,
 }: CreateProjectDialogProps) {
-  const slug = toSlug(name)
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton>
@@ -59,10 +49,10 @@ export function CreateProjectDialog({
             autoFocus
           />
           <p className="min-h-4 text-xs" style={{ color: "var(--text-muted)" }}>
-            {slug && (
+            {roomId && (
               <>
-                slug:{" "}
-                <span style={{ color: "var(--text-secondary)" }}>{slug}</span>
+                room id:{" "}
+                <span style={{ color: "var(--text-secondary)" }}>{roomId}</span>
               </>
             )}
           </p>
@@ -81,7 +71,7 @@ export function CreateProjectDialog({
 interface RenameProjectDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  project: MockProject | null
+  project: ProjectSummary | null
   name: string
   onNameChange: (v: string) => void
   loading: boolean
@@ -137,7 +127,7 @@ export function RenameProjectDialog({
 interface DeleteProjectDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  project: MockProject | null
+  project: ProjectSummary | null
   loading: boolean
   onSubmit: () => void
 }

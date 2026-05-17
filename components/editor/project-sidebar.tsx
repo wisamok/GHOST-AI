@@ -4,26 +4,27 @@ import { X, Plus, Pencil, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
-import { MOCK_PROJECTS, type MockProject } from "@/lib/mock-projects"
+import { type ProjectSummary } from "@/lib/data/projects"
 
 interface ProjectSidebarProps {
   isOpen: boolean
   onClose: () => void
   onNewProject: () => void
-  onRenameProject: (project: MockProject) => void
-  onDeleteProject: (project: MockProject) => void
+  ownedProjects: ProjectSummary[]
+  sharedProjects: ProjectSummary[]
+  onRenameProject: (project: ProjectSummary) => void
+  onDeleteProject: (project: ProjectSummary) => void
 }
 
 export function ProjectSidebar({
   isOpen,
   onClose,
   onNewProject,
+  ownedProjects,
+  sharedProjects,
   onRenameProject,
   onDeleteProject,
 }: ProjectSidebarProps) {
-  const myProjects = MOCK_PROJECTS.filter((p) => p.owned)
-  const sharedProjects = MOCK_PROJECTS.filter((p) => !p.owned)
-
   return (
     <>
       {isOpen && (
@@ -71,7 +72,7 @@ export function ProjectSidebar({
             </TabsList>
 
             <TabsContent value="my-projects" className="flex-1 overflow-y-auto px-2 py-2">
-              {myProjects.length === 0 ? (
+              {ownedProjects.length === 0 ? (
                 <div className="flex h-full items-center justify-center px-4">
                   <p className="text-sm" style={{ color: "var(--text-muted)" }}>
                     No projects yet.
@@ -79,10 +80,11 @@ export function ProjectSidebar({
                 </div>
               ) : (
                 <ul className="flex flex-col gap-0.5">
-                  {myProjects.map((project) => (
+                  {ownedProjects.map((project) => (
                     <ProjectItem
                       key={project.id}
                       project={project}
+                      isOwned
                       onRename={onRenameProject}
                       onDelete={onDeleteProject}
                     />
@@ -104,6 +106,7 @@ export function ProjectSidebar({
                     <ProjectItem
                       key={project.id}
                       project={project}
+                      isOwned={false}
                       onRename={onRenameProject}
                       onDelete={onDeleteProject}
                     />
@@ -138,23 +141,22 @@ export function ProjectSidebar({
 }
 
 interface ProjectItemProps {
-  project: MockProject
-  onRename: (project: MockProject) => void
-  onDelete: (project: MockProject) => void
+  project: ProjectSummary
+  isOwned: boolean
+  onRename: (project: ProjectSummary) => void
+  onDelete: (project: ProjectSummary) => void
 }
 
-function ProjectItem({ project, onRename, onDelete }: ProjectItemProps) {
+function ProjectItem({ project, isOwned, onRename, onDelete }: ProjectItemProps) {
   return (
-    <li
-      className="group flex items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-[var(--bg-subtle)]"
-    >
+    <li className="group flex items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-[var(--bg-subtle)]">
       <span
         className="flex-1 truncate text-sm"
         style={{ color: "var(--text-primary)" }}
       >
         {project.name}
       </span>
-      {project.owned && (
+      {isOwned && (
         <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
           <Button
             variant="ghost"

@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Feature 06 (TBD)
+- Feature 07: Wire editor home to real project API (complete)
 
 ## Completed
 
@@ -44,6 +44,12 @@ change.
   - `components/editor/editor-navbar.tsx` — `UserButton` added to right section
   - `.env.local` — placeholder env vars for `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_SIGN_IN_URL`, `NEXT_PUBLIC_CLERK_SIGN_UP_URL`
 
+- Feature 06: Project APIs
+  - `app/api/projects/route.ts` — GET (list owner's projects) + POST (create, defaults name to `Untitled Project`)
+  - `app/api/projects/[projectId]/route.ts` — PATCH (rename) + DELETE (delete); both enforce owner check (401/403)
+  - Fixed `lib/prisma.ts`: typed singleton as `PrismaClient` to resolve union-type callable error from Accelerate extension
+  - All four routes verified via `npm run build`
+
 - Feature 05: Prisma Schema & Data Layer
   - Installed `@prisma/client`, `@prisma/adapter-pg`, `pg`, `@prisma/extension-accelerate`
   - `prisma/models/project.prisma` — `Project` model (ownerId, name, description?, status enum DRAFT/ARCHIVED, canvasJsonPath?, timestamps, indexes on ownerId and createdAt) and `ProjectCollaborator` model (projectId with cascade delete, email, createdAt, unique on projectId/email, indexes on email and projectId/createdAt)
@@ -51,13 +57,22 @@ change.
   - Migration `20260517000422_init` applied; client generated to `lib/generated/prisma`
   - Fixed pre-existing type error in `app/layout.tsx`: removed `afterSignInUrl`/`afterSignUpUrl` props (now env-var-only in Clerk v7+)
 
+- Feature 07: Wire editor home to real project API
+  - `lib/data/projects.ts` — `ProjectSummary` type + `getOwnedProjects()` / `getSharedProjects()` server-side helpers (auth/currentUser from Clerk, Prisma queries)
+  - `app/api/projects/route.ts` — POST now accepts optional `id` in body so client-generated room IDs propagate to DB
+  - `hooks/use-project-actions.ts` — `useProjectActions` hook: create (generates slug+suffix room ID, POST, navigate), rename (PATCH, refresh), delete (DELETE, redirect if active workspace or refresh)
+  - `components/editor/project-dialogs.tsx` — switched from `MockProject` to `ProjectSummary`; `CreateProjectDialog` now receives `roomId` prop and shows "room id:" preview
+  - `components/editor/project-sidebar.tsx` — removed mock data; accepts `ownedProjects` and `sharedProjects` as props; `isOwned` boolean prop replaces `project.owned`
+  - `components/editor/editor-home-client.tsx` — new client component containing interactive shell (sidebar state + dialogs), extracted from page
+  - `app/editor/page.tsx` — converted to async server component; fetches owned + shared projects server-side via data helpers; renders `EditorHomeClient`
+
 ## In Progress
 
 - None.
 
 ## Next Up
 
-- Feature 06 (TBD)
+- Feature 08 (TBD)
 
 ## Open Questions
 
