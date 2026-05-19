@@ -64,33 +64,44 @@ export function useProjectActions() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name, id: roomId }),
         })
-        if (res.ok) {
-          const project = await res.json()
-          close()
-          router.push(`/editor/${project.id}`)
+        if (!res.ok) {
+          const text = await res.text()
+          throw new Error(`Create failed: ${res.status} ${res.statusText}${text ? ` - ${text}` : ""}`)
         }
+        const project = await res.json()
+        close()
+        router.push(`/editor/${project.id}`)
       } else if (dialog.type === "rename") {
         const res = await fetch(`/api/projects/${dialog.project.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name }),
         })
-        if (res.ok) {
-          close()
-          router.refresh()
+        if (!res.ok) {
+          const text = await res.text()
+          throw new Error(`Rename failed: ${res.status} ${res.statusText}${text ? ` - ${text}` : ""}`)
         }
+        close()
+        router.refresh()
       } else if (dialog.type === "delete") {
         const res = await fetch(`/api/projects/${dialog.project.id}`, {
           method: "DELETE",
         })
-        if (res.ok) {
-          close()
-          if (pathname === `/editor/${dialog.project.id}`) {
-            router.push("/editor")
-          } else {
-            router.refresh()
-          }
+        if (!res.ok) {
+          const text = await res.text()
+          throw new Error(`Delete failed: ${res.status} ${res.statusText}${text ? ` - ${text}` : ""}`)
         }
+        close()
+        if (pathname === `/editor/${dialog.project.id}`) {
+          router.push("/editor")
+        } else {
+          router.refresh()
+        }
+      }
+    } catch (error) {
+      console.error("Project action failed", error)
+      if (typeof window !== "undefined") {
+        window.alert(error instanceof Error ? error.message : "Project action failed")
       }
     } finally {
       setLoading(false)

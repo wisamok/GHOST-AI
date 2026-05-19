@@ -14,6 +14,10 @@ interface ProjectSidebarProps {
   sharedProjects: ProjectSummary[]
   onRenameProject: (project: ProjectSummary) => void
   onDeleteProject: (project: ProjectSummary) => void
+  activeRoomId?: string
+  /** "overlay" slides over content (default, used on editor home).
+      "inline" sits in the flex layout and pushes the canvas (used in workspace). */
+  variant?: "overlay" | "inline"
 }
 
 export function ProjectSidebar({
@@ -24,7 +28,115 @@ export function ProjectSidebar({
   sharedProjects,
   onRenameProject,
   onDeleteProject,
+  activeRoomId,
+  variant = "overlay",
 }: ProjectSidebarProps) {
+  const sidebarContent = (
+    <aside
+      className={cn(
+        "flex w-72 shrink-0 flex-col border-r",
+        variant === "overlay" &&
+          "fixed inset-y-0 left-0 z-40 transition-transform duration-200 ease-in-out",
+        variant === "overlay" && (isOpen ? "translate-x-0" : "-translate-x-full"),
+      )}
+      style={{
+        backgroundColor: "var(--bg-surface)",
+        borderColor: "var(--border-default)",
+      }}
+    >
+      <div
+        className="flex items-center justify-between border-b px-4 py-3"
+        style={{ borderColor: "var(--border-default)" }}
+      >
+        <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+          Projects
+        </span>
+        <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close sidebar">
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <Tabs defaultValue="my-projects" className="flex h-full flex-col">
+          <TabsList className="mx-3 mt-3 w-[calc(100%-1.5rem)]">
+            <TabsTrigger value="my-projects" className="flex-1">
+              My Projects
+            </TabsTrigger>
+            <TabsTrigger value="shared" className="flex-1">
+              Shared
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="my-projects" className="flex-1 overflow-y-auto px-2 py-2">
+            {ownedProjects.length === 0 ? (
+              <div className="flex h-full items-center justify-center px-4">
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                  No projects yet.
+                </p>
+              </div>
+            ) : (
+              <ul className="flex flex-col gap-0.5">
+                {ownedProjects.map((project) => (
+                  <ProjectItem
+                    key={project.id}
+                    project={project}
+                    isOwned
+                    isActive={project.id === activeRoomId}
+                    onRename={onRenameProject}
+                    onDelete={onDeleteProject}
+                  />
+                ))}
+              </ul>
+            )}
+          </TabsContent>
+
+          <TabsContent value="shared" className="flex-1 overflow-y-auto px-2 py-2">
+            {sharedProjects.length === 0 ? (
+              <div className="flex h-full items-center justify-center px-4">
+                <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                  No shared projects.
+                </p>
+              </div>
+            ) : (
+              <ul className="flex flex-col gap-0.5">
+                {sharedProjects.map((project) => (
+                  <ProjectItem
+                    key={project.id}
+                    project={project}
+                    isOwned={false}
+                    isActive={project.id === activeRoomId}
+                    onRename={onRenameProject}
+                    onDelete={onDeleteProject}
+                  />
+                ))}
+              </ul>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      <div className="border-t p-3" style={{ borderColor: "var(--border-default)" }}>
+        <Button
+          variant="outline"
+          className="w-full gap-2"
+          onClick={onNewProject}
+          style={{
+            backgroundColor: "var(--accent-primary)",
+            borderColor: "var(--accent-primary)",
+            color: "#000000",
+          }}
+        >
+          <Plus className="h-4 w-4" />
+          New Project
+        </Button>
+      </div>
+    </aside>
+  )
+
+  if (variant === "inline") {
+    return isOpen ? sidebarContent : null
+  }
+
   return (
     <>
       {isOpen && (
@@ -34,108 +146,7 @@ export function ProjectSidebar({
           aria-hidden="true"
         />
       )}
-
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r transition-transform duration-200 ease-in-out",
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        )}
-        style={{
-          backgroundColor: "var(--bg-surface)",
-          borderColor: "var(--border-default)",
-        }}
-      >
-        <div
-          className="flex items-center justify-between border-b px-4 py-3"
-          style={{ borderColor: "var(--border-default)" }}
-        >
-          <span
-            className="text-sm font-semibold"
-            style={{ color: "var(--text-primary)" }}
-          >
-            Projects
-          </span>
-          <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close sidebar">
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <Tabs defaultValue="my-projects" className="flex h-full flex-col">
-            <TabsList className="mx-3 mt-3 w-[calc(100%-1.5rem)]">
-              <TabsTrigger value="my-projects" className="flex-1">
-                My Projects
-              </TabsTrigger>
-              <TabsTrigger value="shared" className="flex-1">
-                Shared
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="my-projects" className="flex-1 overflow-y-auto px-2 py-2">
-              {ownedProjects.length === 0 ? (
-                <div className="flex h-full items-center justify-center px-4">
-                  <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-                    No projects yet.
-                  </p>
-                </div>
-              ) : (
-                <ul className="flex flex-col gap-0.5">
-                  {ownedProjects.map((project) => (
-                    <ProjectItem
-                      key={project.id}
-                      project={project}
-                      isOwned
-                      onRename={onRenameProject}
-                      onDelete={onDeleteProject}
-                    />
-                  ))}
-                </ul>
-              )}
-            </TabsContent>
-
-            <TabsContent value="shared" className="flex-1 overflow-y-auto px-2 py-2">
-              {sharedProjects.length === 0 ? (
-                <div className="flex h-full items-center justify-center px-4">
-                  <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-                    No shared projects.
-                  </p>
-                </div>
-              ) : (
-                <ul className="flex flex-col gap-0.5">
-                  {sharedProjects.map((project) => (
-                    <ProjectItem
-                      key={project.id}
-                      project={project}
-                      isOwned={false}
-                      onRename={onRenameProject}
-                      onDelete={onDeleteProject}
-                    />
-                  ))}
-                </ul>
-              )}
-            </TabsContent>
-          </Tabs>
-        </div>
-
-        <div
-          className="border-t p-3"
-          style={{ borderColor: "var(--border-default)" }}
-        >
-          <Button
-            variant="outline"
-            className="w-full gap-2"
-            onClick={onNewProject}
-            style={{
-              backgroundColor: "var(--accent-primary)",
-              borderColor: "var(--accent-primary)",
-              color: "#000000",
-            }}
-          >
-            <Plus className="h-4 w-4" />
-            New Project
-          </Button>
-        </div>
-      </aside>
+      {sidebarContent}
     </>
   )
 }
@@ -143,16 +154,28 @@ export function ProjectSidebar({
 interface ProjectItemProps {
   project: ProjectSummary
   isOwned: boolean
+  isActive?: boolean
   onRename: (project: ProjectSummary) => void
   onDelete: (project: ProjectSummary) => void
 }
 
-function ProjectItem({ project, isOwned, onRename, onDelete }: ProjectItemProps) {
+function ProjectItem({ project, isOwned, isActive, onRename, onDelete }: ProjectItemProps) {
   return (
-    <li className="group flex items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-[var(--bg-subtle)]">
+    <li
+      className="group flex items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-[var(--bg-subtle)]"
+      style={isActive ? { backgroundColor: "var(--bg-elevated)" } : undefined}
+    >
+      <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+        {isActive && (
+          <span
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ backgroundColor: "var(--accent-primary)" }}
+          />
+        )}
+      </span>
       <span
         className="flex-1 truncate text-sm"
-        style={{ color: "var(--text-primary)" }}
+        style={{ color: isActive ? "var(--accent-primary)" : "var(--text-primary)" }}
       >
         {project.name}
       </span>

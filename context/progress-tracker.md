@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Feature 07: Wire editor home to real project API (complete)
+- Feature 09: Share dialog (complete)
 
 ## Completed
 
@@ -66,13 +66,26 @@ change.
   - `components/editor/editor-home-client.tsx` — new client component containing interactive shell (sidebar state + dialogs), extracted from page
   - `app/editor/page.tsx` — converted to async server component; fetches owned + shared projects server-side via data helpers; renders `EditorHomeClient`
 
+- Feature 08: Editor workspace shell
+  - `lib/project-access.ts` — `getCurrentIdentity()` (userId + primary email from Clerk) and `getProjectAccess(roomId)` (checks owner or collaborator, returns project or null)
+  - `components/editor/access-denied.tsx` — centered lock icon, short message, link back to `/editor`; used for both missing and unauthorized projects
+  - `components/editor/project-sidebar.tsx` — added optional `activeRoomId` prop; active item gets `--bg-elevated` background, `--accent-primary` left accent bar and text colour
+  - `components/editor/workspace-client.tsx` — full-viewport workspace shell: top navbar (project name, Share button, AI sidebar toggle, UserButton), overlay `ProjectSidebar` with current room highlighted, canvas placeholder, collapsible right AI sidebar placeholder
+  - `app/editor/[roomId]/page.tsx` — async server component; unauthenticated → `/sign-in`, missing/unauthorized → `AccessDenied`, authorized → `WorkspaceClient` with server-fetched projects; `params` awaited as `Promise` (Next.js 16 convention)
+
+- Feature 09: Share dialog
+  - `app/api/projects/[projectId]/collaborators/route.ts` — GET (list collaborators, owner or collaborator access), POST (invite by email, owner only), DELETE (remove by email, owner only); Clerk Backend API enriches collaborator emails with display name + avatar; falls back to email-only if Clerk call fails
+  - `components/editor/share-dialog.tsx` — Dialog with copy-link button (temporary "Copied!" feedback), invite-by-email input + Invite button (owners only), collaborator list with avatar/name/email rows and per-row Remove button (owners only); read-only list for collaborators
+  - `components/editor/workspace-client.tsx` — added `isOwner` prop, `shareOpen` state, Share button opens ShareDialog
+  - `app/editor/[roomId]/page.tsx` — passes `isOwner={project.ownerId === userId}` to WorkspaceClient
+
 ## In Progress
 
 - None.
 
 ## Next Up
 
-- Feature 08 (TBD)
+- Feature 10 (TBD)
 
 ## Open Questions
 

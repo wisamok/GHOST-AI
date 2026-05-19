@@ -97,15 +97,6 @@ npx prisma generate
 
 Detailed migration guides for each breaking change:
 
-```
-references/esm-support.md        - ESM and CommonJS configuration
-references/schema-changes.md     - Generator, output, imports, and generated entrypoints
-references/driver-adapters.md    - Required driver adapter setup
-references/prisma-config.md      - New configuration file
-references/env-variables.md      - Environment variable loading
-references/removed-features.md   - Middleware, metrics, and CLI flags
-references/accelerate-users.md   - Special handling for Accelerate
-```
 
 ## Step-by-Step Migration
 

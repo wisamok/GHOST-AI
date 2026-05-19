@@ -86,8 +86,6 @@ Useful for remote servers.
 Recent Prisma Studio releases added richer editor workflows:
 
 - multi-cell selection and editing
-- full-table search and more intuitive filtering
-- command palette shortcuts
 - dark mode
 - copy selections as Markdown
 - back-relation navigation

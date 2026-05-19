@@ -103,4 +103,4 @@ For edge compatibility or Turso:
 ## Common Issues
 
 ### "Database file not found"
-Ensure the path in `DATABASE_URL` is correct relative to where Prisma is running or the schema file. `file:./dev.db` creates it next to schema.
+Ensure the path in `DATABASE_URL` is correct. Relative paths like `file:./dev.db` are resolved against Prisma's current working directory when it runs (for example, where you run the `prisma` CLI or where your application starts), not inherently relative to `schema.prisma`. To avoid confusion, run Prisma from the intended directory or use an absolute path in `DATABASE_URL`.
