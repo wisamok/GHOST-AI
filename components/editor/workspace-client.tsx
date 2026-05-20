@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { LayoutDashboard, Share2, Sparkles, Bot, Compass } from "lucide-react"
+import { LayoutDashboard, Share2, Sparkles, Bot } from "lucide-react"
+import { CanvasWrapper } from "@/components/editor/canvas-wrapper"
+import { ShapePanel } from "@/components/editor/shape-panel"
 import { UserButton } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { ProjectSidebar } from "@/components/editor/project-sidebar"
@@ -33,7 +35,7 @@ export function WorkspaceClient({
 
   return (
     <div
-      className="flex h-screen flex-col overflow-hidden"
+      className="fixed inset-0 flex flex-col overflow-hidden"
       style={{ backgroundColor: "var(--bg-base)" }}
     >
       {/* Top navbar */}
@@ -104,54 +106,11 @@ export function WorkspaceClient({
 
         {/* Canvas */}
         <main
-          className="relative flex flex-1 items-center justify-center overflow-hidden"
-          style={{
-            backgroundColor: "var(--bg-base)",
-            backgroundImage:
-              "radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
-          }}
+          className="relative flex flex-1 overflow-hidden"
+          style={{ backgroundColor: "var(--bg-base)" }}
         >
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(ellipse 60% 50% at 50% 55%, rgba(0,200,212,0.07) 0%, transparent 70%)",
-            }}
-          />
-
-          <div className="relative flex flex-col items-center gap-5 px-8 text-center max-w-lg">
-            <div
-              className="flex h-16 w-16 items-center justify-center rounded-2xl"
-              style={{
-                backgroundColor: "var(--bg-elevated)",
-                boxShadow:
-                  "0 0 0 1px var(--border-default), 0 0 24px rgba(0,200,212,0.15)",
-              }}
-            >
-              <Compass className="h-7 w-7" style={{ color: "var(--accent-primary)" }} />
-            </div>
-
-            <p
-              className="text-xs tracking-[0.2em] uppercase"
-              style={{ color: "var(--text-faint)" }}
-            >
-              Workspace Shell
-            </p>
-
-            <h1
-              className="text-2xl font-semibold leading-snug"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Canvas and collaboration tooling land here next.
-            </h1>
-
-            <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
-              This room is ready for the shared architecture canvas, durable AI workflows, and
-              real-time presence. For now, the shell is wired with project context and navigation
-              only.
-            </p>
-          </div>
+          <CanvasWrapper roomId={project.id} />
+          <ShapePanel />
         </main>
 
         {/* Right AI Copilot sidebar */}

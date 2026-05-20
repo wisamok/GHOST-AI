@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Feature 09: Share dialog (complete)
+- Feature 11: Base canvas (complete)
 
 ## Completed
 
@@ -79,13 +79,29 @@ change.
   - `components/editor/workspace-client.tsx` — added `isOwner` prop, `shareOpen` state, Share button opens ShareDialog
   - `app/editor/[roomId]/page.tsx` — passes `isOwner={project.ownerId === userId}` to WorkspaceClient
 
+- Feature 10: Liveblocks setup
+  - `liveblocks.config.ts` — Presence typed (cursor `{x,y}|null`, `isThinking`), UserMeta typed (id, name, avatar, color)
+  - `lib/liveblocks.ts` — lazy-cached `Liveblocks` node client singleton (`getLiveblocks()`), `getUserColor(userId)` maps user ID to deterministic color from fixed palette
+  - `app/api/liveblocks-auth/route.ts` — POST; requires Clerk auth (401 if missing), verifies project access via `getProjectAccess` (403 if denied), `getOrCreateRoom` ensures room exists, `prepareSession` attaches name/avatar/color and grants `FULL_ACCESS` for the room
+  - Installed `@liveblocks/node@3.x` (was missing despite spec claiming all packages installed)
+
+- Feature 11: Base canvas
+  - `types/canvas.ts` — `CanvasNodeData` (label, color, shape), `CanvasNodeType` (`"canvasNode"`), `CanvasEdgeType` (`"canvasEdge"`)
+  - `components/editor/canvas-wrapper.tsx` — `CanvasWrapper` client component: `LiveblocksProvider` (authEndpoint `/api/liveblocks-auth`), `RoomProvider` (roomId, initialPresence `cursor: null, isThinking: false`), inline class-based `LiveblocksErrorBoundary`, `ClientSideSuspense`; inner `CanvasFlow` uses `useLiveblocksFlow` (suspense, empty initial nodes/edges), `ReactFlow` with `ConnectionMode.Loose`, `fitView`, `MiniMap`, `Background` (dots), `Cursors`
+  - `components/editor/workspace-client.tsx` — replaced canvas placeholder with `<CanvasWrapper roomId={project.id} />`
+
+- Feature 12: Shape panel
+  - `components/editor/shape-panel.tsx` — floating pill toolbar (bottom-center, `position: absolute`, `zIndex: 10`); 6 draggable shape buttons (rectangle 160×80, diamond 120×120, circle 80×80, pill 160×60, cylinder 100×80, hexagon 100×100); drag payload serialized as JSON under `application/ghost-shape` key with `{ shape, width, height }`
+  - `components/editor/canvas-node.tsx` — `CanvasNode` custom node renderer; renders all shapes as a simple bordered rectangle with centered label; uses design-system tokens (`--border-default`, `--bg-elevated`, `--text-primary`)
+  - `components/editor/canvas-wrapper.tsx` — restructured: `CanvasFlow` wraps `CanvasInner` in `ReactFlowProvider` so `useReactFlow` is accessible; `CanvasInner` adds `nodeTypes` (`canvasNode → CanvasNode`), `onDragOver`/`onDrop` handlers (reads shape payload, `screenToFlowPosition`, `addNodes` with `id = shape-timestamp-counter`); `ShapePanel` rendered as absolute overlay inside canvas container
+
 ## In Progress
 
 - None.
 
 ## Next Up
 
-- Feature 10 (TBD)
+- Feature 13 (TBD)
 
 ## Open Questions
 
